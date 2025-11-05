@@ -1,0 +1,96 @@
+---
+title: "everybody.codes.2025"
+format: html
+editor: visual
+---
+
+```{r message=FALSE}
+library(here)
+library(tidyverse)
+```
+
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 1
+
+### Part 1
+
+```{r}
+# read in .txt file with names and codes
+dat_1 <- read.table(here::here("everybody_codes_e2025_q01_p1.txt"),
+                    sep = "")
+
+names_1 <- as.data.frame(str_split(dat_1[1,], pattern = ","),
+                         col.names = "names")
+
+codes_1 <- as.data.frame(str_split(dat_1[2,], pattern = ","),
+                         col.names = "codes")
+
+codes_test <- codes_1$codes[1:6]
+```
+
+For this first challenge, the 11 codes instruct how to move through the list of names provided. For instance, L6 means move Left (up) 6 places. We start at the first element in list (or vector for R's purposes), and move from there. 
+
+Psuedocode: 
+* need a number representing the number of positions in the names vector. Limit is 10, so bounds are 1 and 10.
+* for each code, check if begins with R or L, R means add number, L means subtract
+* extract integer in second place of code and add or subtract
+* check at end of each turn if index is < 1 or > 10, if so, set to 1 or 10
+
+```{r}
+alg_1 <- function(names, codes) {
+  
+  index <- 1L
+  
+  for(i in 1:length(codes)) {
+    
+     # move index according to code
+    index <- ifelse( substr(codes[i], 
+                   start = 1, 
+                   stop = 1) == "R", 
+           index + as.numeric(substr(codes[i], 2,2)),
+            index - as.numeric(substr(codes[i], 2,2)))
+    
+    if(index < 1) {
+      index <- 1
+    }
+    if(index > length(names)) {
+      index <- length(names)
+    } 
+    else {index <- index}
+    
+  }
+  
+  return(names[index])
+  
+}
+
+
+alg_1(names_1$names, codes_1$codes)
+
+
+```
+
+
+
+
+### Part 2
+
+
+
+```{r}
+# how to make a 
+
+substr(names_1$names, 1, 1)
+```
+
+```{r}
+```
+
+```{r}
+#| echo: false
+2 * 2
+```
