@@ -79,10 +79,13 @@ alg_1(names_1$names, codes_1$codes)
 
 ### Part 2
 
-
+To find your parents names, follow a code through a list of names. The names are in a circle and you can move clockwise or counter-clockwise through the cirle.
 
 ```{r}
-# how to make a 
+# read in
+dat_1.2 <- read.table(here::here("everybody_codes_e2025_q01_p2.txt"),
+                    sep = "")
+
 
 substr(names_1$names, 1, 1)
 ```
