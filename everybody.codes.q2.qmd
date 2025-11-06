@@ -1,0 +1,123 @@
+---
+title: "everybody.codes.q2"
+format: html
+editor: visual
+---
+
+
+```{r message=FALSE}
+library(here)
+library(tidyverse)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 2
+
+### Part 1
+
+Complex Number Operations. Addition, Multiplication and Division.
+
+[X1,Y1] + [X2,Y2] = [X1 + X2, Y1 + Y2]
+
+[X1,Y1] * [X2,Y2] = [X1 * X2 - Y1 * Y2, X1 * Y2 + Y1 * X2]
+
+[X1,Y1] / [X2,Y2] = [X1 / X2, Y1 / Y2]
+
+**Dividing always rounds down (cut off all fractional parts)**
+
+Begin by setting the result to  [0,0] . Then, complete three cycles of the following operations:
+* Multiply the result by itself.
+* Divide the result by  [10,10] .
+* Add  A  to the result.
+
+```{r}
+# read in .txt file with names and codes
+dat_2.1 <- read.table(here::here("everybody_codes_e2025_q02_p1.txt"),
+                    sep = "")
+
+# extract x and y values from string, put in data frame with 2 cols x and y
+A <- data.frame( x = as.numeric( str_extract(dat_2.1$V1, "([0-9]+)(?=,)") ),
+                 y = as.numeric( str_extract(dat_2.1$V1, "(?<=,)[0-9]+") ) )
+```
+
+```{r}
+
+multiply <- function(complex_1, complex_2) {
+  
+  x1 <- complex_1$x * complex_2$x - complex_1$y * complex_2$y
+  
+  y1 <- complex_1$x * complex_2$y + complex_1$y * complex_2$x
+  
+  R <- data.frame(x = x1, y = y1)
+  
+  return(R)
+  
+}
+
+Rx <- data.frame(x = 1, y = 3)
+
+multiply(Rx, Rx)
+```
+
+
+
+```{r}
+divide <- function(complex_1, complex_2) {
+  
+  x1 <- floor( complex_1$x / complex_2$x )
+  
+  y1 <- floor( complex_1$y / complex_2$y )
+  
+   R <- data.frame(x = x1, y = y1)
+  
+  return(R)
+  
+}
+
+divide(A, Rx)
+
+```
+[X1,Y1] + [X2,Y2] = [X1 + X2, Y1 + Y2]
+
+```{r}
+add <- function(complex_1, complex_2) {
+  
+  x1 <- complex_1$x + complex_2$x
+  
+  y1 <- complex_1$y + complex_2$y
+  
+  R <- data.frame(x = x1, y = y1)
+  
+  return(R)
+}
+
+add(A, Rx)
+```
+
+Begin by setting the result to  [0,0] . Then, complete three cycles of the following operations:
+* Multiply the result by itself.
+* Divide the result by  [10,10] .
+* Add  A  to the result.
+
+```{r}
+R <- data.frame( x = 0, y = 0 )
+
+# loop to run 3 cycles of the mathematical process specified
+for(i in 1:3) {
+  
+  print(R)
+  
+  R <- multiply(R, R)
+  
+  R <- divide(R, data.frame(x = 10, y = 10))
+  
+  R <- add(R, A)
+  
+}
+
+R
+```
+
