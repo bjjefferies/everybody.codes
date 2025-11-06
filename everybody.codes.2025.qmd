@@ -79,21 +79,156 @@ alg_1(names_1$names, codes_1$codes)
 
 ### Part 2
 
-To find your parents names, follow a code through a list of names. The names are in a circle and you can move clockwise or counter-clockwise through the cirle.
+To find your parents names, follow a code through a list of names. The names are in a circle and you can move clockwise or counter-clockwise through the circle. Function this means that if there are 6 names, moving Right 4 from position 3 would cause you to move back to space 1 (4, 5, 6, 1).
 
 ```{r}
-# read in
+# read in names and codes for 1.2
 dat_1.2 <- read.table(here::here("everybody_codes_e2025_q01_p2.txt"),
                     sep = "")
 
+names_1.2 <- as.data.frame(str_split(dat_1.2[1,], pattern = ","),
+                         col.names = "names")
 
-substr(names_1$names, 1, 1)
+codes_1.2 <- as.data.frame(str_split(dat_1.2[2,], pattern = ","),
+                         col.names = "codes")
+
 ```
 
 ```{r}
+alg_1.2 <- function(names, codes) {
+  
+  index <- 1L
+  
+  for(i in 1:length(codes)) {
+    
+     # move index according to code
+    index <- ifelse( substr(codes[i], 
+                   start = 1, 
+                   stop = 1) == "R", 
+                   # double digit move instructions, adjust code
+           index + as.numeric(substr(codes[i], 2,3)),
+            index - as.numeric(substr(codes[i], 2,3)))
+    
+    if(index < 1) {
+      index <- length(names) - abs(index)
+    }
+    if(index > length(names)) {
+      index <- index - length(names)
+    } 
+    else {index <- index}
+    
+  }
+  
+  return(names[index])
+  
+}
+
+alg_1.2(names = names_1.2$names,
+        codes = codes_1.2$codes)
+
 ```
 
+
+### Part 3
+
+To find the second parent, the instructions change. Each code indicates which direction to move, and how far, relative to the name at the first position. That name then swaps places with the first position.
+
+
 ```{r}
-#| echo: false
-2 * 2
+# read in names and codes for 1.2
+dat_1.3 <- read.table(here::here("everybody_codes_e2025_q01_p3.txt"),
+                    sep = "")
+
+names_1.3 <- as.data.frame(str_split(dat_1.3[1,], pattern = ","),
+                         col.names = "names")
+
+codes_1.3 <- as.data.frame(str_split(dat_1.3[2,], pattern = ","),
+                         col.names = "codes")
 ```
+
+psuedocode:
+
+set names vector to temp vector
+break codes apart into L/R and spaces
+Same algorithm for movement as above
+final index - pull name and assign to names[1], names[1] -> names[index]
+
+
+Problem: now movement numbers can be more than double the length of names, meaning even with our catch, we could end up with index values outside of our range (length(names)).
+
+```{r}
+
+alg_1.3 <- function(names_vec, codes) {
+  
+  index <- 1L
+  
+  for(i in 1:length(codes)) {
+    
+     # move index according to code
+    index <- ifelse( substr(codes[i], 
+                   start = 1, 
+                   stop = 1) == "R", 
+                   # double digit move instructions, adjust code
+           index + as.numeric(substr(codes[i], 2,3)),
+            index - as.numeric(substr(codes[i], 2,3)))
+    
+    # correct index for circular movement
+    if(index < 1) {
+      index <- length(names_vec) - abs(index)
+    }
+    if(index > length(names_vec)) {
+      index <- index - length(names_vec)
+    } 
+    else {index <- index}
+    
+    # add second correction in case of very small or large index values
+    if(index < 1) {
+      index <- length(names_vec) - abs(index)
+    }
+    if(index > length(names_vec)) {
+      index <- index - length(names_vec)
+    } 
+    else {index <- index}
+    
+    # swap first and index names
+    swap_name <- names_vec[index]
+    names_vec[index] <- names_vec[1]
+    names_vec[1] <- swap_name
+    
+    #checks
+    print(swap_name)
+    print(names_vec)
+    
+  }
+  
+  # return values is top names at end of all swaps
+  return(names_vec[1])
+  
+}
+
+alg_1.3(names_1.3$names, codes_1.3$codes)
+
+1-43
+30-42
+30-12
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
