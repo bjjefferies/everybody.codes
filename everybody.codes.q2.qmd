@@ -120,3 +120,78 @@ for(i in 1:3) {
 
 R
 ```
+
+
+
+
+
+### Part 2
+
+Complicated algorithm
+
+A=[-3284,68783]
+
+```{r}
+Result <- data.frame(x = 0, y = 0)
+
+# bottom left point in grid of breast plate
+A <- data.frame(x = -3284, y = 68783)
+
+# top right point in grid of breast plate (add 1000, 1000)
+B <- add(A, data.frame(x=1000,y=1000))
+
+# all grid coordinates
+grid_x <- seq(from = A$x, to = B$x, length.out = 101)
+
+grid_y <- seq(from = A$y, to = B$y, length.out = 101)
+
+# data frame with all grid coordinates (all combos of grid_x and grid_y)
+grid <- expand.grid(x = grid_x, y = grid_y)
+                         
+```
+
+
+
+
+```{r}
+
+check_points <- function(points_df, initial_R) {
+  
+  for(pt in 1:nrow(points_df)){
+    
+    # re-initialize R for each point to check
+    R <- initial_R
+    
+    for(i in 1:100) {
+      
+      R <- multiply(R, R)
+      R <- divide(R, data.frame(x = 100000, y = 100000))
+      R <- add(R, points_df[pt,])
+      
+    }
+    
+    engraved_pt <- if{}
+    
+    
+    
+  }
+  
+}
+
+for(i in 1:100) {
+  
+  
+  
+}
+```
+
+
+
+
+
+
+
+
+
+
+
