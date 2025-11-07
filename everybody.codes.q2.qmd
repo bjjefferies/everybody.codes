@@ -140,7 +140,7 @@ A <- data.frame(x = -3284, y = 68783)
 # top right point in grid of breast plate (add 1000, 1000)
 B <- add(A, data.frame(x=1000,y=1000))
 
-# all grid coordinates
+# all grid coordinates, divided into 101 segments each
 grid_x <- seq(from = A$x, to = B$x, length.out = 101)
 
 grid_y <- seq(from = A$y, to = B$y, length.out = 101)
@@ -155,7 +155,11 @@ grid <- expand.grid(x = grid_x, y = grid_y)
 
 ```{r}
 
+initial_R <- data.frame(x = 0, y = 0)
+
 check_points <- function(points_df, initial_R) {
+  
+  engraved_pt <- numeric(nrow(points_df))
   
   for(pt in 1:nrow(points_df)){
     
@@ -170,22 +174,44 @@ check_points <- function(points_df, initial_R) {
       
     }
     
-    engraved_pt <- if{}
-    
-    
+    engraved_pt[pt] <- ifelse(R$x > 1000000 | R$x < -1000000 |
+                      R$y > 1000000 | R$y < -1000000,
+                      0, 1)
     
   }
   
+  return(engraved_pt)
 }
 
-for(i in 1:100) {
-  
-  
-  
-}
+```
+
+```{r}
+test <- check_points(grid, initial_R)
+
+unique(test)
+
+sum(test == 1, na.rm = T)
 ```
 
 
+```{r}
+#unit test
+
+R <- initial_R
+
+for(i in 1:50) {
+      
+      R <- multiply(R, R)
+      print(paste(R$x, R$y, i, "post multiply"))
+      R <- divide(R, data.frame(x = 100000, y = 100000))
+      print(paste(R$x, R$y, i, "post divide"))
+      R <- add(R, grid[1,])
+      print(paste(R$x, R$y, i, "post add"))
+      
+}
+
+grid[1,]
+```
 
 
 
