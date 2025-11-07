@@ -4,7 +4,6 @@ format: html
 editor: visual
 ---
 
-
 ```{r message=FALSE}
 library(here)
 library(tidyverse)
@@ -20,18 +19,15 @@ Information about each challenge can be found at everybody.codes
 
 Complex Number Operations. Addition, Multiplication and Division.
 
-[X1,Y1] + [X2,Y2] = [X1 + X2, Y1 + Y2]
+\[X1,Y1\] + \[X2,Y2\] = \[X1 + X2, Y1 + Y2\]
 
-[X1,Y1] * [X2,Y2] = [X1 * X2 - Y1 * Y2, X1 * Y2 + Y1 * X2]
+\[X1,Y1\] \* \[X2,Y2\] = \[X1 \* X2 - Y1 \* Y2, X1 \* Y2 + Y1 \* X2\]
 
-[X1,Y1] / [X2,Y2] = [X1 / X2, Y1 / Y2]
+\[X1,Y1\] / \[X2,Y2\] = \[X1 / X2, Y1 / Y2\]
 
 **Dividing always rounds down (cut off all fractional parts)**
 
-Begin by setting the result to  [0,0] . Then, complete three cycles of the following operations:
-* Multiply the result by itself.
-* Divide the result by  [10,10] .
-* Add  A  to the result.
+Begin by setting the result to \[0,0\] . Then, complete three cycles of the following operations: \* Multiply the result by itself. \* Divide the result by \[10,10\] . \* Add A to the result.
 
 ```{r}
 # read in .txt file with names and codes
@@ -62,8 +58,6 @@ Rx <- data.frame(x = 1, y = 3)
 multiply(Rx, Rx)
 ```
 
-
-
 ```{r}
 divide <- function(complex_1, complex_2) {
   
@@ -80,7 +74,8 @@ divide <- function(complex_1, complex_2) {
 divide(A, Rx)
 
 ```
-[X1,Y1] + [X2,Y2] = [X1 + X2, Y1 + Y2]
+
+\[X1,Y1\] + \[X2,Y2\] = \[X1 + X2, Y1 + Y2\]
 
 ```{r}
 add <- function(complex_1, complex_2) {
@@ -97,27 +92,31 @@ add <- function(complex_1, complex_2) {
 add(A, Rx)
 ```
 
-Begin by setting the result to  [0,0] . Then, complete three cycles of the following operations:
-* Multiply the result by itself.
-* Divide the result by  [10,10] .
-* Add  A  to the result.
+Begin by setting the result to \[0,0\] . Then, complete three cycles of the following operations: \* Multiply the result by itself. \* Divide the result by \[10,10\] . \* Add A to the result.
 
 ```{r}
 R <- data.frame( x = 0, y = 0 )
 
+Atest <- data.frame( x = 25, y = 9)
+
 # loop to run 3 cycles of the mathematical process specified
 for(i in 1:3) {
   
-  print(R)
+  print(paste(R, i, "0"))
   
   R <- multiply(R, R)
   
+  print(paste(R, i, "1"))
+  
   R <- divide(R, data.frame(x = 10, y = 10))
   
+  print(paste(R, i, "2"))
+  
   R <- add(R, A)
+  
+  print(paste(R, i, "3"))
   
 }
 
 R
 ```
-
