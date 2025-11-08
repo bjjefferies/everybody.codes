@@ -1,0 +1,102 @@
+---
+title: "everybody.codes.q3"
+format: html
+editor: visual
+---
+
+
+```{r message=FALSE}
+library(here)
+library(tidyverse)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 3
+
+### Part 1
+
+Crate packing problem. Numbers represent the size of each crate. A smaller value crate can fit inside a larger one. The question is, what is the greatest value of total crates that can be fit together?  sum(all crates)
+
+Thoughts: identify largest value, add to set vector. Then identify next largest value that is smaller than the largest value in the set vector. Add that to the vector, until there are no more smaller values
+
+```{r}
+crate_vals <- c(8,55,7,42,40,45,33,31,64,60,49,66,83,78,33,23,72,15,35,11,84,30,44,66,20,66,88,7,3,51,85,54,38,88,2,37,2,56,47,40,82,79,51,18,81,69,46,52,56,5,82,73,15,76,13,11,31,43,50,89,79,85,11,44,26,6,12,49,82,28,66,36,66,22,44,39,2,39,83,15,63,82,10,73,20,64,17,25,43,72,54,47,30,15,46,87,85,17,57,6)
+
+max(crate_vals)
+
+#order crate values and eliminate duplicates. By definition, each integer value is at least one less than another.
+crate_ordered <- unique(sort.int(crate_vals))
+
+# sum the ordered crates
+sum(crate_ordered)
+```
+
+
+
+### Part 2
+
+Need the smallest possible set of 20 crates in order to preserve the larger crates
+
+
+```{r}
+part_2_crates <- c(88,59,145,183,26,132,49,153,120,180,134,184,132,6,29,57,137,105,166,61,105,49,10,55,149,145,165,88,56,140,78,78,167,84,82,22,21,185,63,38,65,55,140,27,109,104,156,101,156,7,145,30,127,88,145,44,113,142,14,60,77,92,147,76,74,189,104,186,100,175,118,104,94,182,7,52,110,12,132,18,123,161,148,174,150,18,66,107,179,81,178,26,136,23,92,95,10,10,34,4,134,138,107,12,27,26,76,77,31,44,113,17,54,31,71,22,63,172,145,65,138,47,119,56,50,40,162,150,56,85,65,27,4,172,113,26,59,104,86,158,67,93,134,47,178,115,3,7,24,70,53,159,170,183,165,129,92,36,104,110,120,8,2,133,60,118,181,70,132,67,180,133,185,111,107,93,10,19,154,185,29,144,79,3,14,5,15,132,179,18,77,140,68,20,109,43,36,115,77,83,49,80,189,120,6,152,16,98,144,171,83,88,165,6,52,157,102,119,158,127,138,11,48,142,21,159,55,173,45,176,9,141,109,44,36,166,143,144,138,134,86,129,106,80,41,100,56,143,125,73,94,86,51,137,29,75,107,117,110,145,161,70,180,26,45,146,123,150,28,68,6,148,40,84,134,121,113,29,148,19,174,140,147,147,94,98,18,149,59,156,22,83,40,145,180,86,44,3,118,26)
+
+
+# function for finding smallest 20
+smallest_20 <- function(crate_vals) {
+  
+  ordered <- unique(sort.int(crate_vals))
+  
+  smallest_crates <- ordered[1:20]
+  
+  sum_small <- sum(smallest_crates)
+  
+  output <- list("crates" = smallest_crates, 
+                 "sum" = sum_small)
+  
+  return(output)
+}
+
+smallest_20(crate_vals = part_2_crates)
+
+```
+
+
+
+
+
+### Part 3
+
+Of all the crates in this final vector, need to sort them most efficiently, into the fewest number of sets possible.
+
+```{r}
+# read in crates
+dat_3.3 <- dat_2.1 <- read.table(here::here("everybody_codes_e2025_q03_p3.txt"),
+                    sep = ",")
+
+# transpose data
+dat_3.3 <- t(dat_3.3)
+
+# assign to vector for performance
+crates_3 <- as.vector(dat_3.3)
+```
+
+The ultimate restriction on the lower bound of possible sets is the value with the most duplicates. In this case, value 50 has 3393 values. Since none of that can be in the same set, there must be at least 3393 sets. And since no other values come even close on duplicates, we can safely assume 3393 is the lower boundary.
+
+```{r}
+hist(crates_3)
+
+as.data.frame(dat_3.3) %>% 
+  group_by(V1) %>% 
+  summarise(n = n()) %>% 
+  arrange(desc(n))
+```
+
+
+
+
+
+

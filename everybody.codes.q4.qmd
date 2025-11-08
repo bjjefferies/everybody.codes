@@ -1,0 +1,126 @@
+---
+title: "everybody.codes.q4"
+format: html
+editor: visual
+---
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 4
+
+### Part 1
+
+Gears turning question.
+
+The easy formula for getting gear rotations from first gear to last is simply to divide teeth on first gear by teeth on last gear
+
+```{r}
+
+rotation_fx <- function(G1, G2, Rotations) {
+  
+  floor( G1 / G2 * Rotations )
+  
+}
+
+rotation_fx(G1 = 1000, G2 = 187, Rotations = 2025)
+```
+
+### Part 2
+
+The formula: first gear / last gear = number of rotations last gear makes
+
+if you want to know the number of rotations is takes to make the last gear rotate 10000000000000 times:
+
+\$10000000000000 = x \* (G_1 / G_n) \$
+
+G1 = 981 Gn = 279
+
+```{r}
+# turn off scientific notation
+options(scipen = 999)
+10000000000000 / (981/279)
+
+# function to find needed rotations given first
+rotations_reqd <- function(G1, Gn, desired_Gn_Rotation) {
+  
+  desired_Gn_Rotation / (G1/Gn)
+}
+
+rotations_reqd(G1 = 981, Gn = 279, desired_Gn_Rotation = 10000000000000)
+
+```
+
+### Part 3
+
+Gears are cam shafted to other gears with different numbers of teeth.
+
+Find ratio of first gear transfer (number of turns) \* next gear ratio \* next gear ratio
+
+```{r}
+# proof of concept based on example notes
+(5/7) * (21/18) * (36/27) * (27/10) * (50/10) * (50/11) * 100
+```
+
+Data is .txt file with funny format
+
+```{r}
+dat_4.3 <- read.table(here::here("everybody_codes_e2025_q04_p3.txt"),
+                    sep = "")
+
+head(dat_4.3)
+```
+
+
+
+```{r}
+#shape data so g2[i] is attached to g1[i+1]
+gears <- dat_4.3 %>% 
+  rename(g1 = V1) %>% 
+  # extract gears and cast as numeric
+  mutate(g2 = as.numeric( str_extract(g1, "[0-9]+$") ),
+        g1 = as.numeric( str_extract(g1, "^[0-9]+") )
+         )
+```
+
+
+Algorithm: starting at row 1, take g2[i]/g1[i+1] for all rows until penultimate (nrow -1)
+
+```{r}
+# function for common shaft gears, parameters gears df, rotations of first gear
+comm_shaft_fx <- function(gears_df, rotations){
+  
+  # establish numeric value of number of rows
+  n <- nrow(gears_df)
+  print(paste("n", n))
+  
+  # establish empty vector of len n-1 to store ratios
+  ratios <- numeric(n-1)
+  
+  # run loop to determine each transfer ratio
+  for(i in seq_len(n-1)){
+    
+    ratios[i] <- gears_df$g2[i] / gears_df$g1[i+1]
+    
+    print(ratios[i])
+    
+  }
+  
+  return(floor (prod(ratios) * rotations) )
+}
+
+```
+
+
+```{r}
+comm_shaft_fx(gears_df = gears, rotations = 100)
+```
+
+
+```{r}
+dat
+```
+
+
+

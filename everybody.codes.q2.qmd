@@ -157,30 +157,62 @@ grid <- expand.grid(x = grid_x, y = grid_y)
 
 initial_R <- data.frame(x = 0, y = 0)
 
+
+# check points function optimized by converting all dataframe to vectors
 check_points <- function(points_df, initial_R) {
   
-  engraved_pt <- numeric(nrow(points_df))
+  # establish values to optimize performance
+  n <- nrow(points_df)
+  engraved_pt <- integer(n)
+  cycles <- integer(n)
   
-  for(pt in 1:nrow(points_df)){
+  #convert dataframes to numeric vectors, not dataframe, for performance
+  px <- points_df$x
+  py <- points_df$y
+  
+  #initial R as numeric pair, not df, for performance
+  Rx0 <- initial_R$x
+  Ry0 <- initial_R$y
+  
+  for(pt in seq_len(n)){
     
     # re-initialize R for each point to check
-    R <- initial_R
+    Rx <- Rx0
+    Ry <- Ry0
     
+    # run multiple, divide, add cycle 100 times
     for(i in 1:100) {
       
-      R <- multiply(R, R)
-      R <- divide(R, data.frame(x = 100000, y = 100000))
-      R <- add(R, points_df[pt,])
+      # multiply R by itself (first step)
+      x_new <- Rx * Rx - Ry * Ry
+      y_new <- Rx * Ry + Ry * Rx
+      
+      # Divide R by [100000, 100000]
+      x_new <- floor(x_new / 100000)
+      y_new <- floor(y_new / 100000)
+      
+      # Add point to R
+      Rx <- x_new + px[pt]
+      Ry <- y_new + py[pt]
+      
+      # break the loop if any values fall out of +/- 1000000 range
+      if( abs(Rx) > 1000000 || abs(Ry) > 1000000 ) {
+        cycles[pt] <- i
+        engraved_pt[pt] <- 0
+        break
+      }
+      
+      # if loop completes without breaking range
+      if( i == 100 ) {
+        engraved_pt[pt] <- 1
+      }
       
     }
     
-    engraved_pt[pt] <- ifelse(R$x > 1000000 | R$x < -1000000 |
-                      R$y > 1000000 | R$y < -1000000,
-                      0, 1)
-    
   }
   
-  return(engraved_pt)
+  return(data.frame(engraved_pt = engraved_pt, 
+                    cycles = cycles))
 }
 
 ```
@@ -188,9 +220,13 @@ check_points <- function(points_df, initial_R) {
 ```{r}
 test <- check_points(grid, initial_R)
 
-unique(test)
+unique(test$cycles)
 
 sum(test == 1, na.rm = T)
+
+head(test$cycles)
+
+sum(test$cycles == 100)
 ```
 
 
@@ -211,6 +247,9 @@ for(i in 1:50) {
 }
 
 grid[1,]
+
+
+engraved_pt <- numeric(nrow(grid))
 ```
 
 
