@@ -1,0 +1,97 @@
+---
+title: "everybody.codes.q5"
+format: revealjs
+editor: visual
+---
+
+```{r message=FALSE, warning=FALSE}
+library(here)
+library(tidyverse)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 5
+
+### Part 1
+
+Creating Splines to determine the quality of swords
+
+1. Check all segments of the spine, starting from the top.
+2. If your number is less than the one on the spine segment and the left side of the segment is free - place it on the left.
+3. If your number is greater than the one on the spine segment and the right side of the segment is free - place it on the right.
+4. If no suitable place is found at any segment, create a new spine segment from your number and place it as the last one.
+
+```{r}
+notes_5.1 <- "24:6,8,2,7,4,3,1,8,7,8,3,3,7,4,1,6,1,9,2,9,1,6,7,3,5,4,6,7,8,1"
+
+# extract all values into vector
+vals_5.1 <- as.numeric( strsplit( str_extract(notes_5.1, "(?<=:).+"), ",")[[1]] )
+
+```
+
+
+```{r}
+spline_fx <- function(vals_vec) {
+  
+  S <- c(vals_vec[1])
+  L <- c()
+  R <- c()
+  
+  for(i in 2:length(vals_vec)) {
+    
+    print(paste("L", L))
+    print(paste("S", S))
+    print(paste("R", R))
+    print(vals_vec[i])
+    
+    if(vals_vec[i] < S[length(S)] & length(L) < length(S) ) {
+      L <- append(L, vals_vec[i])
+      }
+    else if(vals_vec[i] > S[length(S)] & length(R) < length(S) ) {
+      R <- append(R, vals_vec[i])
+      }
+    else {S <- append(S, vals_vec[i])}
+    
+  }
+  
+  L <- c(L, rep(NA, length(S) - length(L)))
+  R <- c(R, rep(NA, length(S) - length(R)))
+  
+  results <- data.frame(L, S, R)
+  
+  return(results)
+}
+
+q5.1 <- spline_fx(vals_5.1)
+
+print(q5.1$S)
+
+paste(q5.1$S, collapse = "")
+```
+
+
+```{r}
+test <- c(1,2)
+test[3]
+
+test <- append(test, 4)
+
+append(test, 5)
+
+test1 <- c(6,7)
+
+cbind(test, test1)
+
+test[length(test)]
+```
+
+
+```{r}
+
+```
+
+
+
