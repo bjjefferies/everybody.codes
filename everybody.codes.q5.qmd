@@ -34,7 +34,7 @@ vals_5.1 <- as.numeric( strsplit( str_extract(notes_5.1, "(?<=:).+"), ",")[[1]] 
 
 
 ```{r}
-spline_fx <- function(vals_vec) {
+spine_fx <- function(vals_vec) {
   
   S <- c(vals_vec[1])
   L <- c()
@@ -65,7 +65,7 @@ spline_fx <- function(vals_vec) {
   return(results)
 }
 
-q5.1 <- spline_fx(vals_5.1)
+q5.1 <- spine_fx(vals_5.1)
 
 print(q5.1$S)
 
@@ -90,7 +90,11 @@ test[length(test)]
 
 
 ```{r}
+df_vals <- cbind(x = seq(1:length(vals_5.1)),
+                 y = vals_5.1,
+                 position = rep("i", )
 
+df
 ```
 
 
