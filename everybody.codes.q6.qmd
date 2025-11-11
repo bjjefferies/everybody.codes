@@ -1,0 +1,141 @@
+---
+title: "everybody.codes.q6"
+format: revealjs
+editor: visual
+---
+
+```{r message=FALSE, warning=FALSE}
+library(here)
+library(tidyverse)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 6
+
+### Part 1
+
+a = novice  A = mentor
+
+AaAa means three total mentor-novice pairs. Aa is 1, A__a is 2, __Aa is 3
+
+```{r}
+pairs <- "ABCbcBcBAaCBCcbbBBbBAbcaAaCbacbbBbaAAAbCBaaaABBbCAaCbCbBCBCabaBbAAAaBaCCBccaabbcacBAbCAccBAAaCABbbBb"
+
+pairs_vec <- as.vector( strsplit(pairs, "")[[1]] )
+
+```
+
+
+
+```{r}
+
+pair_opts <- numeric()
+
+for(i in 1:length(pairs_vec)) {
+  
+  if(pairs_vec[i] == "a") {
+    
+    pair_opts <- append(pair_opts, sum(pairs_vec[1:i] == "A"))
+    
+  } else next
+  
+}
+
+
+sum(pair_opts)
+```
+
+
+
+
+
+### Part 2
+
+Generalized to find the pairs [capital][lower] for each character type in vector
+
+
+```{r}
+pairs2 <- "ABCcBaBcbaCBBBAaABcBaBBacabABABcccCaaaACCBbbcaCAcAACBAaaCCcaAaAcaACBBaBAbCbbCbaBBaAACcbBcCacabBcbaAbACbbcBCbBcaaABBBabAaBcaABaCBacBacBbAbcCAcCcBcaAACbCaaBaBCCBBbCCAAAAaBaAcAAaBbAbCBBcABAcabcabaaacCbaABCAABbAcbbBccaBCaACcbBACAccBACaAcBBBBCAaAaAaacaAcacCACBaCCCaCabBCCabCAcbcbBAabCcbACAcCabCbbAACAcbacC"
+
+pairs_vec2 <- as.vector( strsplit(pairs2, "")[[1]] )
+```
+
+
+```{r}
+pair_opts <- numeric()
+
+for(i in 1:length(pairs_vec2)){
+  
+  if(grepl("[[:lower:]]", pairs_vec2[i])) {
+    
+    pair_opts <- append(pair_opts, sum(pairs_vec2[1:i] == toupper(pairs_vec2[i])))
+    
+  } else next
+  
+}
+
+sum(pair_opts)
+```
+
+
+
+
+
+
+
+### Part 3
+
+
+
+```{r}
+notes6.3 <- readLines(con = here::here("everybody_codes_e2025_q06_p3.txt"))
+
+```
+
+
+
+```{r}
+
+nearest_mentor <- function(pairs_string, distance) {
+    
+    # convert string to vector  
+    pairs_vec <- as.vector( strsplit(pairs_string, "")[[1]] )
+    
+    # replicate vector 1000 times
+    pairs_vec <- rep(pairs_vec, 1000)
+    len_pairs <- length(pairs_vec)
+    
+    # get index values of lowercase
+    lower_index <- which( grepl("[[:lower:]]", pairs_vec) )
+    n <- length(lower_index)
+    
+    # initialize vector to store pair options
+    pair_opts <- numeric(length = n)
+    
+    # counter
+    cnt <- 1
+  
+  for(i in lower_index){
+    
+      upper_search <- toupper(pairs_vec[i])
+      
+      lower_bound <- max(1, (i - distance) )
+      upper_bound <- min(len_pairs, (i + distance) )
+      
+      pair_opts[cnt] <- sum(pairs_vec[lower_bound:upper_bound] == upper_search,
+                            na.rm = T)
+                          
+      cnt <- cnt + 1
+      
+    }
+  
+  return(sum(pair_opts))
+    
+}
+
+nearest_mentor(notes6.3, 1000)
+```
+

@@ -48,10 +48,10 @@ spine_fx <- function(vals_vec) {
     print(vals_vec[i])
     
     if(vals_vec[i] < S[length(S)] & length(L) < length(S) ) {
-      L <- append(L, vals_vec[i])
+      L[length(S)] <- vals_vec[i]
       }
     else if(vals_vec[i] > S[length(S)] & length(R) < length(S) ) {
-      R <- append(R, vals_vec[i])
+      R[length(S)] <- vals_vec[i]
       }
     else {S <- append(S, vals_vec[i])}
     
@@ -83,6 +83,10 @@ append(test, 5)
 
 test1 <- c(6,7)
 
+test1[4] <- 8
+
+length(test1)
+
 cbind(test, test1)
 
 test[length(test)]
@@ -90,11 +94,11 @@ test[length(test)]
 
 
 ```{r}
-df_vals <- cbind(x = seq(1:length(vals_5.1)),
+df_vals <- data.frame(x = seq(1:length(vals_5.1)),
                  y = vals_5.1,
-                 position = rep("i", )
+                 position = rep("i", length(vals_5.1)))
 
-df
+df_vals
 ```
 
 
