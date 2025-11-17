@@ -1,0 +1,126 @@
+---
+title: "everybody.codes.q10"
+author: "Ben Jefferies"
+date: "2025-11-17"
+output: html_document
+---
+```{r message=FALSE}
+library(here)
+library(tidyverse)
+library(igraph)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 10
+
+### Part 1
+
+Dragon Chess
+
+
+```{r}
+# read in file as vector with 21 elements, each of which is 
+dat_10.1 <- readLines(con = here("everybody_codes_e2025_q10_p1.txt"))
+
+# split each character of each string, concatenate all together into one long string
+all_peices <- unlist( strsplit(dat_10.1, "") )
+
+# create matrix
+chess_board <- matrix(all_peices, nrow = 21, ncol = 21, byrow = TRUE)
+
+
+```
+
+
+dragons move like knights.  so can move row +/- 2 then col +/- 1 or col +/- 2 then row +/- 1 (eight options)
+
+```{r}
+#find position of dragon in matrix - returns matrix
+dragon_0 <- which(chess_board == "D", arr.ind = T)
+
+dragon_x <- dragon_0[1,1]
+dragon_y <- dragon_0[1,2]
+
+# define move patterns in two vectors
+move_x <- c(2,2,-2,-2,1,1,-1,-1)
+move_y <- c(1,-1,1,-1,2,-2,2,-2)
+
+x_2 <- numeric(8L)
+y_2 <- numeric(8L)
+
+for(i in 1:8){
+  
+  x_2[i] <- dragon_x + move_x[i]
+  y_2[i] <- dragon_y + move_y[i]
+
+}
+
+dragon_coords <- data.frame(x = c(x_2),
+                            y = c(y_2))
+### 3rd move
+
+x_3 <- numeric()
+y_3 <- numeric()
+
+for(r in seq_along(x_2)){
+  
+  pt_x <- x_2[r]
+  pt_y <- y_2[r]
+  
+  for(i in 1:8){
+    
+    x_3[length(x_3)+1] <- pt_x + move_x[i]
+    y_3[length(y_3)+1] <- pt_y + move_y[i]
+    
+  }
+  
+}
+
+### 4th Move
+
+x_4 <- numeric()
+y_4 <- numeric()
+
+for(r in seq_along(x_3)){
+  
+  pt_x <- x_3[r]
+  pt_y <- y_3[r]
+  
+  for(i in 1:8){
+    
+    x_4[length(x_4)+1] <- pt_x + move_x[i]
+    y_4[length(y_4)+1] <- pt_y + move_y[i]
+    
+  }
+  
+}
+
+# put all coords into dataframe
+dragon_coords <- data.frame(x = c(dragon_x, x_2, x_3, x_4),
+                            y = c(dragon_y, y_2, y_3, y_4))
+
+# collapse dataframe to distinct rows
+dragon_coords <- unique(dragon_coords)
+
+```
+
+
+
+```{r}
+sheep <- data.frame( which(chess_board == "S", arr.ind = T) )
+
+names(sheep) <- c("x", "y")
+```
+
+
+```{r}
+# Answer: need to merge dataframes by both rows, and then count the number of rows that match perfectly
+
+kills <- merge(x = sheep, y = dragon_coords)
+```
+
+
+
