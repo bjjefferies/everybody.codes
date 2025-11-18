@@ -1,0 +1,94 @@
+---
+title: "everybody.codes.q8"
+author: "Ben Jefferies"
+date: "2025-11-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+library(here)
+library(tidyverse)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 8
+
+### Part 1
+
+String Game - you have a perfect circle with evenly spaced nails around it. Counting how many times a string pulled between nails at given index passes through the exact center.
+
+Essentially, if you have an even number of screws, you can divide the nail indexes into two vectors by cutting the number perfectly in half. Anytime the string passes from one nail to the nail at the same index in the other half vector, it passes through the center.
+
+other ways: 
+
+1. if the number following any number in the sequence is the first number + or - half of the vector, then it passes through the center.
+
+2. if the two numbers add to nails + 2 then it passes through the center
+
+```{r}
+seq_8.1 <- c(1,32,16,4,17,1,17,1,17,30,14,30,14,30,14,30,15,31,15,31,12,26,12,27,11,29,13,29,13,29,17,1,17,2,20,2,18,2,18,2,18,2,18,2,21,9,25,12,26,10,30,18,5,22,6,22,7,20,6,24,8,24,5,17,1,18,5,21,9,25,9,26,12,28,9,25,12,28,13,32,14,28,13,29,13,29,11,23,7,23,7,22,6,23,3,19,32,16,28,12)
+
+centers_fx <- function(nails_seq) {
+  
+  # get number of nails
+  nails <- max(nails_seq)
+  
+  # matrix solution - col 1 is first half, col 2 is second half
+  nails_m <- matrix(1:nails, nrow = nails/2, ncol = 2)
+  
+  # number of checks is n-1
+  n <- length(nails_seq) - 1
+  
+  # establish vector of length n to store 1's and 0's
+  center_passes <- numeric(n)
+  
+  for(i in 1:n){
+    
+    x <- which(nails_m == nails_seq[i], arr.ind = T)
+    y <- which(nails_m == nails_seq[i+1], arr.ind = T)
+    
+    # check if the values in sequence i and i + 1 have the same index vales in half vecs
+    if(x[1] == y[1]){
+      center_passes[i] <- 1
+      } else {center_passes[i] <- 0}
+    
+  }
+  
+  return( sum(center_passes, na.rm = T) )
+
+}
+
+centers_fx(seq_8.1)
+
+```
+
+
+
+
+
+
+
+### Part 2
+
+Circle Nail problem, counting the number of knots tied when new string passes over already tied string segments.
+
+Need to store pairs with coordinates of already tied strings. Check if 
+
+
+
+
+```{r}
+seq_8.2 <- c(1,5,2,6,8,4,1,7,3,5,7,8,2)
+
+pairs <- matrix()
+```
+
+

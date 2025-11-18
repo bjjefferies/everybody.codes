@@ -1,0 +1,153 @@
+---
+title: "everybody.codes.q9"
+author: "Ben Jefferies"
+date: "2025-11-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+library(here)
+library(tidyverse)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 9
+
+### Part 1
+
+DNA comparison. Need to find the child which must always have trait at each position that could have been inherited from a parent. Then, find the number of traits were inherited from each parent, count that and then multiply them.
+
+
+```{r}
+notes_9.1 <- readLines(con = here("everybody_codes_e2025_q09_p1.txt"))
+
+# split notes into 3 distinct character strings
+test <- lapply(notes_9.1, FUN = function(x) {
+  
+  unlist( strsplit(x, ":")[[1]][2] )
+  
+}) 
+
+# create matrix array with split characters
+test_m <- sapply(test, simplify = T, FUN = function(x) {
+  
+  as.vector( strsplit(x, "")[[1]] )
+  
+})
+
+test_m[2,1]
+
+names(test_m)
+
+# vec_1 <- strsplit(test[[1]], "")[[1]]
+# vec_2 <- strsplit(test[[2]], "")[[1]]
+# vec_3 <- strsplit(test[[3]], "")[[1]]
+
+```
+
+
+determine which vector is the child:
+
+check each index value, the vector with the index value that is different from the others gets a 0
+
+could sum the 1/0 for each vector, only the child will have sum = length(vec)
+
+matrix solution:
+matrix has 3 cols, one for each possible child
+create new result matrix, where for each row in each column, if the value is also found in that row, replace with 1, if not, replace with 0. Column with highest sum is the child.
+
+```{r}
+
+
+# requires matrix where each column represents one of the dragon ducks
+child_fx <- function(dragonDuckMatrix) {
+  
+  # returns 3, length 
+  n <- ncol(dragonDuckMatrix)
+  
+  # initialize sums matrix
+  child_sums <- matrix(data = 0,
+                        nrow = 1,
+                        ncol = n)
+  
+  # init value for child, will be column number
+  child_num <- numeric()
+  
+  # loop for number of rows - determine the child
+  for(r in 1:nrow(dragonDuckMatrix)) {
+    
+    # loop for each column within row
+    for(c in 1:n) {
+      
+      if(dragonDuckMatrix[r,c] %in% dragonDuckMatrix[r,-c]) {
+        
+        child_sums[1,c] <- child_sums[1,c] + 1
+        
+      }
+    }
+  }
+  
+  # returns column number of child
+  child_num <- which(child_sums == max(child_sums))
+  
+  # separate child column into vector
+  child <- as.vector( dragonDuckMatrix[ , child_num] )
+  
+  # specify which two cols are parents
+  parents <- dragonDuckMatrix[ , -child_num]
+  
+  ### second half of function to determine similarities between each parent and child
+  
+  parent_sums <- matrix(data = 0,
+                        nrow = 1,
+                        ncol = ncol(parents))
+  
+  for(i in 1:ncol(parents)) {
+    
+    parent_sums[1,i] <- sum(parents[,i] == child)
+    
+  }
+  
+  return(parent_sums)
+  
+}
+
+
+child_test <- child_fx(test_m)
+
+child_test[1,1]*child_test[1,2]
+
+test_m[2,-3]
+
+sums <- matrix(data = 0, nrow = 1,
+                 ncol = ncol(test_m))
+
+which(child_test == max(child_test) )
+
+sum(test_m[,1] == test_m[,2])
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
