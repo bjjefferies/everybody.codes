@@ -1,0 +1,54 @@
+---
+title: "everybody.codes.q11"
+author: "Ben Jefferies"
+date: "2025-11-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE}
+library(here)
+library(tidyverse)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 11
+
+### Part 1
+
+Duck Flying Checksum algorithm for balancing flock
+
+
+```{r}
+dat_11.1 <- readLines(con = here("everybody_codes_e2025_q11_p1.txt"))
+
+dat_11.1 <- as.numeric(dat_11.1)
+
+is.vector(dat_11.1)
+```
+
+
+Round 1, move left to right (top to bottom) on vector of ducks. For each element n, if n+1 < n, then n = n-1, (n+1) = n+1.  If n = n+1, then skip to next check next element.
+
+```{r}
+### Round 1
+
+rounds_list <- list()
+
+
+for(i in seq_along(dat_11.1)){
+  
+  if(dat_11.1[i] > dat_11.1[i+1])
+}
+
+dat_11.1[-1]
+```
+
+
+

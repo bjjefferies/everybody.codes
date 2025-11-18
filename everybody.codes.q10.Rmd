@@ -4,10 +4,10 @@ author: "Ben Jefferies"
 date: "2025-11-17"
 output: html_document
 ---
+
 ```{r message=FALSE}
 library(here)
 library(tidyverse)
-library(igraph)
 ```
 
 # Everybody Codes 2025
@@ -31,6 +31,7 @@ all_peices <- unlist( strsplit(dat_10.1, "") )
 # create matrix
 chess_board <- matrix(all_peices, nrow = 21, ncol = 21, byrow = TRUE)
 
+sum(all_peices == "S")
 
 ```
 
@@ -48,19 +49,40 @@ dragon_y <- dragon_0[1,2]
 move_x <- c(2,2,-2,-2,1,1,-1,-1)
 move_y <- c(1,-1,1,-1,2,-2,2,-2)
 
-x_2 <- numeric(8L)
-y_2 <- numeric(8L)
+### 1st Move
+
+x_1 <- numeric(8L)
+y_1 <- numeric(8L)
 
 for(i in 1:8){
   
-  x_2[i] <- dragon_x + move_x[i]
-  y_2[i] <- dragon_y + move_y[i]
+  x_1[i] <- dragon_x + move_x[i]
+  y_1[i] <- dragon_y + move_y[i]
 
 }
 
-dragon_coords <- data.frame(x = c(x_2),
-                            y = c(y_2))
-### 3rd move
+dragon_coords <- data.frame(x = c(x_1),
+                            y = c(y_1))
+### 2nd move
+
+x_2 <- numeric()
+y_2 <- numeric()
+
+for(r in seq_along(x_1)){
+  
+  pt_x <- x_1[r]
+  pt_y <- y_1[r]
+  
+  for(i in 1:8){
+    
+    x_2[length(x_2)+1] <- pt_x + move_x[i]
+    y_2[length(y_2)+1] <- pt_y + move_y[i]
+    
+  }
+  
+}
+
+### 3rd Move
 
 x_3 <- numeric()
 y_3 <- numeric()
@@ -76,8 +98,8 @@ for(r in seq_along(x_2)){
     y_3[length(y_3)+1] <- pt_y + move_y[i]
     
   }
-  
 }
+  
 
 ### 4th Move
 
@@ -95,21 +117,28 @@ for(r in seq_along(x_3)){
     y_4[length(y_4)+1] <- pt_y + move_y[i]
     
   }
-  
 }
 
-# put all coords into dataframe
-dragon_coords <- data.frame(x = c(dragon_x, x_2, x_3, x_4),
-                            y = c(dragon_y, y_2, y_3, y_4))
 
-# collapse dataframe to distinct rows
-dragon_coords <- unique(dragon_coords)
+
+
+
+
 
 ```
 
 
 
 ```{r}
+# put all coords into dataframe
+dragon_coords <- data.frame(x = c(dragon_x, x_1, x_2, x_3, x_4),
+                            y = c(dragon_y, y_1, y_2, y_3, y_4))
+
+# collapse dataframe to distinct rows (therefore distinct coordinates)
+dragon_coords <- unique(dragon_coords)
+
+
+# create matching dataframe with coordinates of all sheep
 sheep <- data.frame( which(chess_board == "S", arr.ind = T) )
 
 names(sheep) <- c("x", "y")
