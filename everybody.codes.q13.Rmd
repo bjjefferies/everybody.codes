@@ -1,0 +1,253 @@
+---
+title: "everybody.codes.q13"
+author: "Ben Jefferies"
+date: "2025-11-26"
+output: html_document
+---
+
+```{r message=FALSE}
+library(here)
+library(tidyverse)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 13
+
+### Part 1
+
+first element goes to position 1 in vector 
+second element goes to last 
+third element goes to position 2
+fourth element goes to second to last
+fifth goes to position 3
+sixth goes to third to last
+
+create two vectors, one for end of list(length/2), one for beginning (length/2), combine at end.
+- end of list is populated with even (%%2) elements. Input from 1..., then reverse coded at end
+-- once it is reversed, can simply concat the two vectors
+
+
+
+```{r}
+
+wheel_dial_fx <- function(notes_vec, rotations) {
+  
+  # init wheel start and end vectors
+  wheel_start <- numeric(length = ceiling(length(notes_vec)/2))
+  wheel_end <- numeric(length = floor(length(notes_vec)/2))
+  
+  # loop to place numbers in wheel vectors
+  for(elem in 1:length(notes_vec)){
+    
+    if(elem %% 2 == 1){
+      wheel_start[ceiling(elem/2)] <- notes_vec[elem]
+    } else {
+      wheel_end[(elem/2)] <- notes_vec[elem]
+    }
+  }
+  
+  # reverse the index for end of wheel
+  wheel_end <- rev(wheel_end)
+  
+  # concat 1 and wheel vectors
+  wheel <- c(1, wheel_start, wheel_end)
+  
+  # find ending of rotation
+  result <- wheel[rotations %% length(wheel) + 1]
+  
+  return(result)
+  
+}
+
+```
+
+
+
+
+
+```{r}
+# read in file as vector with 21 elements, each of which is 
+dat_13.1 <- readLines(con = here("everybody_codes_e2025_q13_p1.txt"))
+
+dat_13.1 <- as.numeric(dat_13.1)
+
+wheel_dial_fx(dat_13.1, 2025)
+```
+
+
+
+
+
+
+### Part 2
+
+
+
+```{r}
+# read in file as vector with 21 elements, each of which is 
+dat_13.2 <- readLines(con = here("everybody_codes_e2025_q13_p2.txt"))
+
+ranges <- data.frame(start = as.numeric(str_extract(dat_13.2, "^[0-9]+")),
+                     end = as.numeric(str_extract(dat_13.2, "[0-9]+$"))
+                     )
+
+ranges[1,2] - ranges[1,1]
+
+
+
+
+```
+
+
+code:
+1. determine length of wheel vectors by first adding together all of the ranges from range_df
+2. Because we have ranges and don't know exact division, we can't divide wheel into perfect halves.
+create two wheel vectors, each length of total positions.
+3. Given that ranges will change, we cannot place elements into specific positions. Though it isn't fast, we need to concatenate each vector.
+
+
+```{r}
+wheel_range_fx <- function(notes_df, rotations) {
+  
+  start_time <- Sys.time()
+  
+  # init wheel start and end vectors
+  wheel_start <- c()
+  wheel_end <- c()
+  
+  # loop to concatenate numbers to either start or end of wheel
+  for(row in 1:nrow(notes_df)){
+    
+    if(row %% 2 == 1){
+      wheel_start <- c(wheel_start, seq(from = notes_df[row,1],
+                                        to = notes_df[row,2]))
+    } else {
+      wheel_end <- c(wheel_end, seq(from = notes_df[row,1],
+                                        to = notes_df[row,2]))
+    }
+  }
+  
+  # reverse the index for end of wheel
+  wheel_end <- rev(wheel_end)
+  
+  # concat 1 and wheel vectors
+  wheel <- c(1, wheel_start, wheel_end)
+  
+  # find ending of rotation
+  result <- wheel[rotations %% length(wheel) + 1]
+  
+  end_time <- Sys.time()
+  
+  return(list(result,
+              paste("run time:", end_time - start_time)))
+  
+}
+
+wheel_range_fx(ranges, 20252025)
+
+```
+
+
+
+### Optimizing:
+
+Idea - stolen from reddit. Create column with index_start and index_end
+
+Could sort the dataframe first to make things easier, going clockwise around the circle
+
+- need to reverse order the end_ranges as well, so that the numbering starts at the end of the range and goes to the beginning of the range
+
+
+```{r}
+
+positions <- 1
+
+for(row in 1:nrow(ranges)){
+    positions <- positions + ranges[row,2] - ranges[row,1]
+}
+
+# get the ending indexes
+end_index <- seq(2, nrow(ranges), by = 2)
+
+# create two separate data frames
+end_ranges <- ranges[end_index, ]
+start_ranges <- ranges[-end_index, ]
+
+# reverse the end_ranges rows
+end_ranges <- end_ranges[rev(seq_len(nrow(end_ranges))), ]
+
+# reverse start and end within end ranges
+end_start <- end_ranges$start
+end_end <- end_ranges$end
+
+end_ranges <- data.frame(start = end_end,
+                         end = end_start)
+
+#create first row range
+first_row <- data.frame(start = 1, end = 1)
+
+# create sorted dataframe
+sorted_ranges <- rbind(first_row, start_ranges, end_ranges)
+
+row.names(sorted_ranges) <- NULL
+
+# create index columns
+sorted_ranges <- sorted_ranges %>% 
+  mutate(posits = ifelse( abs(end - start) == 0, 1, abs(end-start)))
+
+sorted_ranges <- sorted_ranges %>% 
+  mutate(end_index = cumsum(posits))
+
+sorted_ranges <- sorted_ranges %>% 
+  mutate(start_index = ifelse( is.na(lag(end_index)+1) , 0, lag(end_index)+1)) 
+
+
+# now need to find which row in the data frame the dial is turned to
+# divide rotations by the number of positions, get remainder
+
+dial <- 20252025 %% positions
+
+target_row <- which(sorted_ranges$start_index <= dial & sorted_ranges$end_index >= dial)
+
+# now need to count up in the sequence
+within_range_dial <- dial - sorted_ranges[target_row,"start_index"]
+
+
+seq(sorted_ranges[target_row,"start"], sorted_ranges[target_row,"end"])[within_range_dial]
+
+```
+
+
+
+
+
+
+```{r}
+seq(10,1)
+```
+
+
+
+
+
+
+### Part 3
+
+Same as part 2 but wants us to optimize the code. Without optimization still runs < 2min.
+
+
+
+```{r}
+# read in file as vector with 21 elements, each of which is 
+dat_13.3 <- readLines(con = here("everybody_codes_e2025_q13_p3.txt"))
+
+ranges_13.3 <- data.frame(start = as.numeric(str_extract(dat_13.3, "^[0-9]+")),
+                     end = as.numeric(str_extract(dat_13.3, "[0-9]+$"))
+                     )
+
+wheel_range_fx(ranges_13.3, 202520252025)
+```
+
