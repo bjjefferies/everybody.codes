@@ -30,25 +30,186 @@ dat_11.1 <- readLines(con = here("everybody_codes_e2025_q11_p1.txt"))
 
 dat_11.1 <- as.numeric(dat_11.1)
 
-is.vector(dat_11.1)
 ```
 
 
 Round 1, move left to right (top to bottom) on vector of ducks. For each element n, if n+1 < n, then n = n-1, (n+1) = n+1.  If n = n+1, then skip to next check next element.
 
+psuedocode: (phase 1) for however many rounds necessary, check if next element in vector is smaller, if yes then subtract one from current element, add one to next element. Continue through the n-1 element. This phase only stops when no more ducks are able to be moved.
+
+How to check if any more ducks can be moved before executing another round of the loop?
+Need a simple statement for a while loop that will check that each element moving from low to high in ducks vector is greater than or equal to last.
+
+In R, needs to be another check loop that
+
+(phase 2) For the second 5 rounds, check if next element is larger, if yes then add 1 to current element, subtract 1 from the next
+
 ```{r}
-### Round 1
-
-rounds_list <- list()
+ducks <- dat_11.1
 
 
-for(i in seq_along(dat_11.1)){
+### Define function that runs phase 1 and 2 for specified rounds, returns flocksum
+scout_duck_fx <- function(ducks, rounds) {
+
+# track column totals at each step in rounds_list
+rounds_m <- matrix(nrow = rounds,
+                   ncol = length(ducks))
+
+rnd_counter <- 0
+
+# flag to close the phase1 loop
+phase1_complete <- FALSE
+
+### Initiate outer loop for set number of rounds
+while(rnd_counter < rounds){
+
+  # check for phase 1 loop - each duck must be < subsequent duck
+  while( !phase1_complete && ( ducks[1] > ducks[2] | ducks[2] > ducks[3] | ducks[3] > ducks[4] | ducks[4] > ducks[5] | ducks[5] > ducks[6] )){
+      
+      #execute phase 1 loop
+      for(i in 1:(length(ducks)-1)){
+      
+      if(ducks[i] > ducks[i+1]){
+        ducks[i] <- ducks[i] - 1
+        ducks[i+1] <- ducks[i+1] + 1
+        }
+      }
+    rnd_counter <- rnd_counter + 1
+    
+    rounds_m[rnd_counter,] <- ducks
+  }
   
-  if(dat_11.1[i] > dat_11.1[i+1])
+  # the first time the phase 1 loop is exited, change flag to TRUE
+  if( !phase1_complete) {
+    phase1_complete <- TRUE
+  }  
+  
+  # phase 2 loop
+  for(i in 1:(length(ducks)-1)){
+    if(ducks[i] < ducks[i+1]){
+      ducks[i] <- ducks[i] + 1
+      ducks[i+1] <- ducks[i+1] - 1
+    }
+  }
+  rnd_counter <- rnd_counter + 1
+    
+  rounds_m[rnd_counter,] <- ducks
+  
 }
 
-dat_11.1[-1]
+# calculate flock_sum
+return(sum( rounds_m[rounds,1]*1,
+            rounds_m[rounds,2]*2,
+            rounds_m[rounds,3]*3,
+            rounds_m[rounds,4]*4,
+            rounds_m[rounds,5]*5,
+            rounds_m[rounds,6]*6)
+       )
+
+}
+
+scout_duck_fx(dat_11.1, 10)
 ```
 
+
+
+
+
+### Part 2
+
+For this part the challenge is to take a larger group of ducks and run phase 1 and 2 until the ducks are balanced. The output needed is the number of rounds necessary to balance the ducks.
+
+key difference: the outside loop in the function should be a while loop (while !(ducks))
+
+shortcut check: can run loop until both first and last element are equal to the avg of all ducks.
+
+```{r}
+dat_11.2 <- readLines(con = here("everybody_codes_e2025_q11_p2.txt"))
+
+dat_11.2 <- as.numeric(dat_11.2)
+```
+
+
+
+
+```{r}
+
+
+duck_equalizer_fx <- function(ducks) {
+
+# track column totals at each step in rounds_list
+rounds_m <- matrix(nrow = 1000000,
+                   ncol = length(ducks))
+
+# round counter
+rnd_counter <- 0
+
+# initiate loop checking
+something_happened <- FALSE
+
+# phase indicator
+phase <- 1
+
+# find average of ducks
+avg_ducks <- mean(ducks)
+
+### Initiate outer loop until first and last element are the average
+while(!(ducks[1] == avg_ducks && ducks[length(ducks)] == avg_ducks)){
+
+  # check for phase 1 loop - each duck must be < subsequent duck
+  for(rnd in seq(1:1000000)){
+      
+      something_happened <- FALSE
+      
+      if(phase == 1){
+        #execute phase 1 loop
+        for(i in 1:(length(ducks)-1)){
+        
+          if( ducks[i] > ducks[i+1]) {
+              ducks[i] <- ducks[i] - 1
+              ducks[i+1] <- ducks[i+1] + 1
+              something_happened <- TRUE
+              }
+        }
+      rnd_counter <- rnd_counter + 1
+      
+      if(rnd_counter >= nrow(rounds_m)) {
+        warning("Max iterations reached")
+        return(rnd_counter)
+      }
+      
+      rounds_m[rnd_counter,] <- ducks
+      
+      # check if ducks were moved, if not set phase to 2
+      if(something_happened){
+        next
+      } else {
+        phase <- 2
+        }  
+      }
+      
+        # phase 2 loop
+      for(i in 1:(length(ducks)-1)){
+        if(ducks[i] < ducks[i+1]){
+          ducks[i] <- ducks[i] + 1
+          ducks[i+1] <- ducks[i+1] - 1
+        }
+      }
+      rnd_counter <- rnd_counter + 1
+      
+      if(rnd_counter >= nrow(rounds_m)) {
+        warning("Max iterations reached")
+        break
+      }  
+      
+      rounds_m[rnd_counter,] <- ducks
+  }
+}
+return(rnd_counter)
+}
+  
+
+duck_equalizer_fx(ducks = dat_11.2)
+```
 
 

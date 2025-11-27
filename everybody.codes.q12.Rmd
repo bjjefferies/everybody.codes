@@ -1,0 +1,76 @@
+---
+title: "everybody.codes.q12"
+author: "Ben Jefferies"
+date: "2025-11-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE}
+library(here)
+library(tidyverse)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 12
+
+### Part 1
+
+How many barrels ignite? You light the top left corner barrel. A barrel can ignite any barrel to the top, bottom, left or right that is equal or less value.
+
+```{r}
+# convert data into a numeric matrix representing the barrels array
+dat_12.1 <- readLines(con = here("everybody_codes_e2025_q12_p1.txt"))
+
+barrel_rows <- sapply(dat_12.1, FUN = function(x){
+  strsplit(x, "")
+})  
+
+barrels_m <- do.call(rbind, barrel_rows)
+
+rownames(barrels_m) <- NULL
+
+barrels_m <- apply(barrels_m, MARGIN = 2, FUN = as.numeric)
+
+```
+
+
+code ideas:
+
+create row and col vectors representing all possible positions in barrel array
+
+create row and col vectors to store values of ignited barrels
+
+while loop (boolean something happened)
+
+check barrel_m[ignite]
+
+
+
+
+```{r}
+m_row <- seq(1:nrow(barrels_m))
+m_col <- seq(1:ncol(barrels_m))
+
+# create data frame with all coordinates
+barrels_coords <- expand.grid(row = m_row, col = m_col)
+
+
+ignite <- 
+
+something_happened <- TRUE
+
+while(something_happened){
+  
+  
+  
+}
+
+```
+
