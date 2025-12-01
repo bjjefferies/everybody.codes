@@ -142,7 +142,11 @@ wheel_range_fx <- function(notes_df, rotations) {
   end_time <- Sys.time()
   
   return(list(result,
-              paste("run time:", end_time - start_time)))
+              paste("run time:", end_time - start_time),
+              paste("dial:", rotations %% length(wheel) + 1),
+              paste("positions:", length(wheel)) 
+              )
+         )
   
 }
 
@@ -154,7 +158,7 @@ wheel_range_fx(ranges, 20252025)
 
 ### Optimizing:
 
-Idea - stolen from reddit. Create column with index_start and index_end
+Idea - stolen from reddit. Create columns for index_start and index_end
 
 Could sort the dataframe first to make things easier, going clockwise around the circle
 
@@ -162,11 +166,12 @@ Could sort the dataframe first to make things easier, going clockwise around the
 
 
 ```{r}
-
+# check all of the positions that will be created on the wheel, using unmodified dataframe
 positions <- 1
 
+# finding the difference between start and end will undercount by 1, so add 1 at the end
 for(row in 1:nrow(ranges)){
-    positions <- positions + ranges[row,2] - ranges[row,1]
+    positions <- positions + ranges[row,2] - ranges[row,1] + 1
 }
 
 # get the ending indexes
@@ -192,11 +197,13 @@ first_row <- data.frame(start = 1, end = 1)
 # create sorted dataframe
 sorted_ranges <- rbind(first_row, start_ranges, end_ranges)
 
+# remove row names from sorted range
 row.names(sorted_ranges) <- NULL
 
 # create index columns
+# calculated positions, adding 1 to accomodate inclusive difference
 sorted_ranges <- sorted_ranges %>% 
-  mutate(posits = ifelse( abs(end - start) == 0, 1, abs(end-start)))
+  mutate(posits = ifelse( abs(end - start) == 0, 1, abs(end-start)+1))
 
 sorted_ranges <- sorted_ranges %>% 
   mutate(end_index = cumsum(posits))
@@ -208,7 +215,7 @@ sorted_ranges <- sorted_ranges %>%
 # now need to find which row in the data frame the dial is turned to
 # divide rotations by the number of positions, get remainder
 
-dial <- 20252025 %% positions
+dial <- 20252025 %% positions + 2
 
 target_row <- which(sorted_ranges$start_index <= dial & sorted_ranges$end_index >= dial)
 
@@ -222,12 +229,69 @@ seq(sorted_ranges[target_row,"start"], sorted_ranges[target_row,"end"])[within_r
 
 
 
-
-
-
 ```{r}
-seq(10,1)
+optimized_wheel_range <- function(notes_df, rotations) {
+  
+  # get the ending indexes
+  end_index <- seq(2, nrow(notes_df), by = 2)
+  
+  # create two separate data frames
+  end_ranges <- notes_df[end_index, ]
+  start_ranges <- notes_df[-end_index, ]
+  
+  # reverse the end_ranges rows
+  end_ranges <- end_ranges[rev(seq_len(nrow(end_ranges))), ]
+  
+  # reverse start and end within end ranges
+  end_start <- end_ranges$start
+  end_end <- end_ranges$end
+  
+  end_ranges <- data.frame(start = end_end,
+                           end = end_start)
+  
+  #create first row range
+  first_row <- data.frame(start = 1, end = 1)
+  
+  # create sorted dataframe
+  sorted_ranges <- rbind(first_row, start_ranges, end_ranges)
+  
+  # remove row names from sorted range
+  row.names(sorted_ranges) <- NULL
+  
+  # create index columns
+  # calculated positions, adding 1 to accommodate inclusive difference
+  sorted_ranges <- sorted_ranges %>% 
+    mutate(posits = ifelse( abs(end - start) == 0, 1, abs(end-start)+1))
+  
+  sorted_ranges <- sorted_ranges %>% 
+    mutate(end_index = cumsum(posits))
+  
+  sorted_ranges <- sorted_ranges %>% 
+    mutate(start_index = ifelse( is.na(lag(end_index)+1) , 0, lag(end_index)+1)) 
+  
+  
+  # now need to find which row in the data frame the dial is turned to
+  # divide rotations by the number of positions, get remainder
+  
+  dial <- rotations %% positions + 2
+  
+  target_row <- which(sorted_ranges$start_index <= dial & sorted_ranges$end_index >= dial)
+  
+  # now need to count up in the sequence
+  within_range_dial <- dial - sorted_ranges[target_row,"start_index"]
+  
+  # get result
+  result <- seq(sorted_ranges[target_row,"start"], sorted_ranges[target_row,"end"])[within_range_dial]
+  
+  return(result)
+  
+}
+
+
+optimized_wheel_range(ranges_13.3, 202520252025)
 ```
+
+
 
 
 

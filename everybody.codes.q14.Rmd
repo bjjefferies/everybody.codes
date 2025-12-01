@@ -1,0 +1,93 @@
+---
+title: "everybody.codes.q14"
+author: "Ben Jefferies"
+date: "2025-11-27"
+output: html_document
+---
+
+
+```{r message=FALSE}
+library(here)
+library(tidyverse)
+```
+
+# Everybody Codes 2025
+
+Information about each challenge can be found at everybody.codes
+
+## Quest 14
+
+### Part 1
+
+
+
+
+```{r}
+# read in file as vector with 21 elements, each of which is 
+dat_14.1 <- readLines(con = here("everybody_codes_e2025_q14_p1.txt"))
+
+# split characters
+m_14.1 <- matrix( unlist(strsplit(dat_14.1, "")) ,
+        nrow = length(dat_14.1), ncol = length(dat_14.1),
+        byrow = T)
+
+# replace values with 1 and 0
+m_14.1[m_14.1 == "#"] <- 1
+m_14.1[m_14.1 == "."] <- 0
+
+# convert matrix to numeric for easy calculating
+m_14.1 <- apply(m_14.1, MARGIN = 2, as.numeric)
+
+vector_14.1 <- as.numeric(t(m_14.1))
+
+
+
+vector_14.1[]
+
+
+m_14.1[-1,5]
+```
+
+
+Code Ideas:
+
+Each round sum the matrix.  Add sum to total variable.
+
+To check for next round positioning. Need to check each value in the matrix.
+Values to check are diagonal. Meaning you check 4 positions, the position +/- rowlength+1 and rowlength-1.  
+
+For this part, I tried to do the calculation as a vector. However, subsetting vectors is strange since for the starting values you would be checking vector[-8], but in R that -8 returns the whole vector but without the 8th element...
+
+
+```{r}
+
+active_tiles <- function(tiles_vec, row_len) {
+  
+  total <- 0
+  
+  #establish check distances
+  topLeft <- -1*(row_len+1)
+  topRight <- -1*(row_len-1)
+  bottomLeft <- row_len-1
+  bottomRight <- row_len+1
+  
+  # loop that determines value of each element for next round
+  for(i in 1:length(tiles_vec)){
+    
+    if( (i + topLeft | i + topRight | i + bottomRight | i + bottomLeft) < 0 )
+    
+    
+    if( sum( tiles_vec[i + topLeft],
+             tiles_vec[i + topLeft],
+             tiles_vec[i + topLeft],
+             tiles_vec[i + topLeft], na.rm = T) )
+    
+  }
+  
+}
+
+```
+
+
+
+
